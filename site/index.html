@@ -1,0 +1,206 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Radar de Rebajas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: etiqueta de liquidación — barra de filtros fija + rejilla de etiquetas con sticker de % */
+:root{
+  --bg:#EEF0EC; --paper:#FBFCFA; --ink:#17202A; --muted:#5D6873; --line:#D7DCD6;
+  --sticker:#F5C518; --sticker-ink:#1A1400; --accent:#1F5FD1; --good:#18794E; --chip:#E3E7E1;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171C; --paper:#1A2027; --ink:#E9EDF0; --muted:#98A3AD; --line:#2B343D;
+  --sticker:#F5C518; --sticker-ink:#1A1400; --accent:#7EA8F5; --good:#5BC994; --chip:#232B33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171C; --paper:#1A2027; --ink:#E9EDF0; --muted:#98A3AD; --line:#2B343D;
+  --sticker:#F5C518; --sticker-ink:#1A1400; --accent:#7EA8F5; --good:#5BC994; --chip:#232B33; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{padding-block:28px 18px}
+.brandline{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 18px;justify-content:space-between}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2rem,5.5vw,3.4rem);line-height:.95;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 .tag{display:inline-block;background:var(--sticker);color:var(--sticker-ink);padding:.02em .22em .06em;border-radius:6px;transform:rotate(-2deg)}
+.stamp{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.lede{color:var(--muted);max-width:62ch;margin:10px 0 0}
+
+/* promos */
+.promos{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:18px 0 6px}
+.promo{background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.promo b{font-family:var(--display);font-size:16px}
+.promo span{color:var(--muted);font-size:13.5px}
+.promo a{color:var(--accent);font-weight:600;font-size:13.5px;text-decoration:none}
+.promo a:hover{text-decoration:underline}
+.code{font-family:var(--mono);background:var(--sticker);color:var(--sticker-ink);padding:0 6px;border-radius:4px}
+
+/* filtros */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:12px}
+.frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.flabel{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);width:62px;flex:none}
+.chip{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:5px 11px;font:500 13.5px var(--body);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip small{font-family:var(--mono);color:var(--muted);font-size:11px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.7}
+.chip:focus-visible,.go:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tools input,.tools select{font:500 14px var(--body);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.tools input{width:150px}
+.count{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto}
+
+/* rejilla */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px;padding-block:18px 26px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0;position:relative}
+.ph{aspect-ratio:1/1;width:100%;max-width:100%;background:#fff;display:grid;place-items:center;position:relative;overflow:hidden;flex:none}
+.ph img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:contain;padding:6px}
+.ph .mono{font-family:var(--display);font-weight:800;font-size:44px;color:#C9CFC7}
+.sticker{position:absolute;top:10px;left:10px;background:var(--sticker);color:var(--sticker-ink);font:600 13px var(--mono);padding:4px 8px;border-radius:4px;transform:rotate(-4deg);box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.g{position:absolute;top:10px;right:10px;background:rgba(23,32,42,.82);color:#fff;font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 7px;border-radius:4px}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.name{font-family:var(--display);font-weight:700;font-size:16.5px;line-height:1.2;margin:0}
+.color{font-size:12.5px;color:var(--muted);margin-top:-4px}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.now{font:600 21px var(--mono)}
+.was{font:500 13px var(--mono);color:var(--muted);text-decoration:line-through}
+.save{font:600 12px var(--mono);color:var(--good)}
+.sizes{display:flex;flex-wrap:wrap;gap:4px}
+.sz{font:500 11.5px var(--mono);border:1px solid var(--line);border-radius:4px;padding:1px 5px;background:var(--chip)}
+.sz.hit{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.go{margin-top:auto;display:flex;justify-content:center;gap:6px;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;font-size:14px;border-radius:8px;padding:9px 12px}
+.go:hover{background:var(--accent);color:#fff}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px 0}
+
+/* enlaces de tiendas */
+section.stores{padding-block:10px 40px}
+h2{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;max-width:70ch}
+.slist{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.store{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.store b{font-family:var(--display);font-size:16px}
+.store .links{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:6px}
+.store a{color:var(--accent);text-decoration:none;font-weight:500;font-size:14px}
+.store a:hover{text-decoration:underline}
+.store p{margin:4px 0 0;color:var(--muted);font-size:13px}
+footer{color:var(--muted);font-size:13px;padding-block:0 30px}
+@media (max-width:520px){.flabel{width:100%}.tools input{flex:1;width:auto}.count{width:100%;margin-left:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="wrap top">
+  <div class="brandline">
+    <h1>Radar de <span class="tag">Rebajas</span></h1>
+    <div class="stamp">Precios revisados · 13 nov 2026, 11:30 a.m. (CR)</div>
+  </div>
+  <p class="lede">Prendas en SALE leídas directamente de las tiendas oficiales en USA. Cada etiqueta trae el precio rebajado, el original, las tallas que tenían stock al revisar y el enlace al producto.</p>
+  <div class="promos">
+    <div class="promo"><b>Calvin Klein</b><span>Hasta 50% en todo el sitio, 30% en underwear y 60% en la Logo Shop. Hay boxers desde $7.50.</span><a href="https://www.calvinklein.us/en/sale/men" target="_blank" rel="noopener">Ver sale ↗</a></div>
+    <div class="promo"><b>Gymshark</b><span>Last Chance: hasta 70% menos. Lo rebajado 60% o más es venta final, sin devolución.</span><a href="https://www.gymshark.com/collections/last-chance/mens" target="_blank" rel="noopener">Ver Last Chance ↗</a></div>
+    <div class="promo"><b>Levi's en Macy's</b><span>Ya empezaron las ofertas de Black Friday: jeans 501, 541 y 565 con hasta 70–80% menos.</span><a href="https://www.macys.com/shop/featured/levis-sale" target="_blank" rel="noopener">Ver Levi's en Macy's ↗</a></div>
+    <div class="promo"><b>Lululemon</b><span>Su sale se llama We Made Too Much: leggings, shorts, sudaderas y chaquetas rebajadas.</span><a href="https://shop.lululemon.com/c/we-made-too-much/n18mhd" target="_blank" rel="noopener">Ver We Made Too Much ↗</a></div>
+  </div>
+</header>
+
+<nav class="filters" aria-label="Filtros">
+  <div class="wrap">
+    <div class="frow" id="f-brand"><span class="flabel">Marca</span></div>
+    <div class="frow" id="f-gender"><span class="flabel">Género</span></div>
+    <div class="frow" id="f-type"><span class="flabel">Tipo</span></div>
+    <div class="tools">
+      <label class="flabel" for="size">Talla</label>
+      <input id="size" type="search" placeholder="M, XL, 10, 8.5…" autocomplete="off">
+      <select id="sort" aria-label="Ordenar">
+        <option value="pct">Mayor descuento</option>
+        <option value="low">Precio más bajo</option>
+        <option value="save">Más ahorro en $</option>
+        <option value="brand">Marca A–Z</option>
+      </select>
+      <span class="count" id="count"></span>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap"><div class="grid" id="grid"></div></main>
+
+<section class="wrap stores">
+  <h2>Ir directo al sale de cada tienda</h2>
+  <p class="sub">La rejilla es una selección. Estas páginas oficiales muestran el catálogo completo en oferta, con stock en vivo.</p>
+  <div class="slist">
+    <div class="store"><b>Nike</b><div class="links"><a href="https://www.nike.com/w/mens-sale-3yaepznik1" target="_blank" rel="noopener">Hombre ↗</a><a href="https://www.nike.com/w/womens-sale-3yaepz5e1x6" target="_blank" rel="noopener">Mujer ↗</a><a href="https://www.nike.com/w/sale-3yaep" target="_blank" rel="noopener">Todo ↗</a></div><p>Miles de piezas de hombre y mujer en sale.</p></div>
+    <div class="store"><b>Adidas</b><div class="links"><a href="https://www.adidas.com/us/men-sale" target="_blank" rel="noopener">Hombre ↗</a><a href="https://www.adidas.com/us/women-sale" target="_blank" rel="noopener">Mujer ↗</a></div><p>Más de 2 200 piezas de hombre en oferta.</p></div>
+    <div class="store"><b>Levi's</b><div class="links"><a href="https://www.macys.com/shop/featured/levis-sale" target="_blank" rel="noopener">En Macy's ↗</a><a href="https://www.levi.com/US/en_US/sale/c/levi_clothing_sale_us" target="_blank" rel="noopener">Tienda oficial ↗</a></div><p>Las piezas de la rejilla vienen de Macy's; la tienda oficial no permite lectura automática.</p></div>
+    <div class="store"><b>Calvin Klein</b><div class="links"><a href="https://www.calvinklein.us/en/sale/men" target="_blank" rel="noopener">Hombre ↗</a><a href="https://www.calvinklein.us/en/sale/women" target="_blank" rel="noopener">Mujer ↗</a><a href="https://www.calvinklein.us/en/underwear/men" target="_blank" rel="noopener">Underwear H ↗</a></div><p>Hasta 50% en todo el sitio y 30% en underwear.</p></div>
+    <div class="store"><b>New Balance</b><div class="links"><a href="https://www.newbalance.com/sale/men/" target="_blank" rel="noopener">Hombre ↗</a><a href="https://www.newbalance.com/sale/women/" target="_blank" rel="noopener">Mujer ↗</a></div><p>Casi todo es calzado. Gastando $125+ hay 25% extra en estilos seleccionados.</p></div>
+    <div class="store"><b>Gymshark</b><div class="links"><a href="https://www.gymshark.com/collections/last-chance/mens" target="_blank" rel="noopener">Hombre ↗</a><a href="https://www.gymshark.com/collections/last-chance/womens" target="_blank" rel="noopener">Mujer ↗</a></div><p>La sección de rebajas se llama Last Chance.</p></div>
+    <div class="store"><b>Lululemon</b><div class="links"><a href="https://shop.lululemon.com/c/men-we-made-too-much/n18mhdznrqw" target="_blank" rel="noopener">Hombre ↗</a><a href="https://shop.lululemon.com/c/women-we-made-too-much/n16o10z8mhd" target="_blank" rel="noopener">Mujer ↗</a></div><p>We Made Too Much: leggings, shorts y chaquetas.</p></div>
+  </div>
+</section>
+<footer class="wrap">Precios en USD antes de impuestos y envío. Las tallas cambian rápido en sale: confirma en la tienda antes de comprar. Tallas de calzado en numeración de USA.</footer>
+
+<script src="data.js"></script>
+<script src="images.js" onerror="window.IMG={}"></script>
+<script>
+(function(){
+const IMGS = window.IMG || {};
+const ORD=['XXXS','3XS','XXS','2XS','XS','S','M','L','XL','XXL','2XL','2X','3XL','3X','4XL','4X','OSZ'];
+const sk=s=>{const t=s.replace(/ Tall$/,'').toUpperCase();const i=ORD.indexOf(t);if(i>=0)return [0,i,s.length];const n=parseFloat(t.replace(/^M/,''));return isNaN(n)?[2,0,0]:[1,n,s.length]};
+const sortSizes=a=>[...new Set(a)].sort((x,y)=>{const a1=sk(x),b1=sk(y);return a1[0]-b1[0]||a1[1]-b1[1]||a1[2]-b1[2]||x.localeCompare(y)});
+const items = P.map((p,i)=>({i,brand:p[0],g:p[1],type:p[2],name:p[3],color:p[4],now:p[5],was:p[6],url:p[7],sizes:sortSizes(p[9].split(',')),pct:Math.round((1-p[5]/p[6])*100)}));
+const BRANDS=['Nike','Adidas',"Levi's",'Calvin Klein','Lululemon','New Balance','Gymshark'];
+const GENDERS=['Hombre','Mujer'];
+const TYPES=['Tenis','Abrigos','Sudaderas','Deportiva','Pantalones','Camisetas','Ropa interior'];
+const st={brand:new Set(),g:'Todos',type:new Set(),size:'',sort:'pct'};
+try{const s=JSON.parse(localStorage.getItem('radar-f')||'null'); if(s){st.g=s.g||'Todos'; st.sort=s.sort||'pct'; (s.brand||[]).forEach(b=>st.brand.add(b)); (s.type||[]).forEach(t=>st.type.add(t));}}catch(e){}
+const save=()=>{try{localStorage.setItem('radar-f',JSON.stringify({g:st.g,sort:st.sort,brand:[...st.brand],type:[...st.type]}))}catch(e){}};
+const $=id=>document.getElementById(id);
+const gOk=(it,g)=>g==='Todos'||it.g===g||it.g==='Unisex';
+function chip(label,count,pressed,on){const b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('aria-pressed',pressed);b.innerHTML=label+(count!=null?' <small>'+count+'</small>':'');b.onclick=on;return b}
+function sizeMatch(sz,q){if(!q)return false;q=q.toLowerCase().replace(/\s/g,'');const s=sz.toLowerCase().replace(/\s/g,'');if(s===q)return true;return s.split('/').some(p=>p===q||p.replace(/^[mw]/,'')===q)}
+function renderFilters(){
+  const fb=$('f-brand'),fg=$('f-gender'),ft=$('f-type');
+  [fb,fg,ft].forEach(f=>{while(f.children.length>1)f.lastChild.remove()});
+  fb.append(chip('Todas',null,st.brand.size===0,()=>{st.brand.clear();update()}));
+  BRANDS.forEach(b=>fb.append(chip(b,items.filter(i=>i.brand===b&&gOk(i,st.g)).length,st.brand.has(b),()=>{st.brand.has(b)?st.brand.delete(b):st.brand.add(b);update()})));
+  ['Todos',...GENDERS].forEach(g=>fg.append(chip(g,null,st.g===g,()=>{st.g=g;update()})));
+  ft.append(chip('Todo',null,st.type.size===0,()=>{st.type.clear();update()}));
+  TYPES.forEach(t=>{const n=items.filter(i=>i.type===t&&gOk(i,st.g)&&(!st.brand.size||st.brand.has(i.brand))).length;ft.append(chip(t,n,st.type.has(t),()=>{st.type.has(t)?st.type.delete(t):st.type.add(t);update()}))});
+}
+function card(it){
+  const el=document.createElement('article');el.className='card';
+  const src=IMGS[it.i];
+  const q=st.size;
+  const shown=it.sizes.slice(0,12);
+  el.innerHTML=`<div class="ph">${src?`<img alt="" loading="lazy">`:`<span class="mono"></span>`}<span class="sticker">−${it.pct}%</span><span class="g">${it.g}</span></div>
+  <div class="body"><div class="meta"><span>${it.brand}</span><span>${it.type}</span></div>
+  <h3 class="name"></h3>${it.color&&!/^[A-Z0-9]{6,}$/.test(it.color)?'<div class="color"></div>':''}
+  <div class="price"><span class="now">$${it.now.toFixed(2)}</span><span class="was">$${it.was.toFixed(2)}</span><span class="save">ahorras $${(it.was-it.now).toFixed(2)}</span></div>
+  <div class="sizes">${shown.map(s=>`<span class="sz${sizeMatch(s,q)?' hit':''}">${s}</span>`).join('')}${it.sizes.length>12?`<span class="sz">+${it.sizes.length-12}</span>`:''}</div>
+  <a class="go" target="_blank" rel="noopener">Ver oferta ↗</a></div>`;
+  if(src){const im=el.querySelector('img');im.src=src;im.alt=it.name}
+  else el.querySelector('.mono').textContent=it.brand.split(' ').map(w=>w[0]).join('');
+  el.querySelector('.name').textContent=it.name;
+  const c=el.querySelector('.color'); if(c)c.textContent=it.color;
+  el.querySelector('.go').href=it.url;
+  return el;
+}
+function update(){
+  save(); renderFilters(); $('sort').value=st.sort;
+  const q=st.size.trim();
+  let list=items.filter(i=>(!st.brand.size||st.brand.has(i.brand))&&gOk(i,st.g)&&(!st.type.size||st.type.has(i.type))&&(!q||i.sizes.some(s=>sizeMatch(s,q))));
+  const by={pct:(a,b)=>b.pct-a.pct||a.now-b.now,low:(a,b)=>a.now-b.now,save:(a,b)=>(b.was-b.now)-(a.was-a.now),brand:(a,b)=>a.brand.localeCompare(b.brand)||b.pct-a.pct}[st.sort];
+  list.sort(by);
+  const grid=$('grid');grid.replaceChildren(...list.map(card));
+  if(!list.length){const e=document.createElement('p');e.className='empty';e.textContent='Ninguna pieza coincide. Quita un filtro o prueba otra talla.';grid.append(e)}
+  $('count').textContent=list.length+' de '+items.length+' piezas';
+}
+$('size').addEventListener('input',e=>{st.size=e.target.value;update()});
+$('sort').addEventListener('change',e=>{st.sort=e.target.value;update()});
+update();
+})();
+</script>
+
+</body></html>
