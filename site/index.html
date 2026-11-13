@@ -68,6 +68,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .now{font:600 21px var(--mono)}
 .was{font:500 13px var(--mono);color:var(--muted);text-decoration:line-through}
 .save{font:600 12px var(--mono);color:var(--good)}
+.vary{font-size:12.5px;color:var(--muted);margin-top:-4px}
+.vary b{font:600 12.5px var(--mono);color:var(--good)}
 .sizes{display:flex;flex-wrap:wrap;gap:4px}
 .sz{font:500 11.5px var(--mono);border:1px solid var(--line);border-radius:4px;padding:1px 5px;background:var(--chip)}
 .sz.hit{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -94,9 +96,9 @@ footer{color:var(--muted);font-size:13px;padding-block:0 30px}
 <header class="wrap top">
   <div class="brandline">
     <h1>Radar de <span class="tag">Rebajas</span></h1>
-    <div class="stamp">Precios revisados · 13 nov 2026, 11:55 a.m. (CR)</div>
+    <div class="stamp">Precios revisados · 13 nov 2026, 12:50 p.m. (CR)</div>
   </div>
-  <p class="lede">Prendas en SALE leídas directamente de las tiendas oficiales en USA. Cada etiqueta trae el precio rebajado, el original, las tallas que tenían stock al revisar y el enlace al producto.</p>
+  <p class="lede">Prendas en SALE leídas directamente de las tiendas oficiales en USA. Cada etiqueta trae el precio rebajado, el original, las tallas que tenían stock al revisar y el enlace al producto. Si el precio cambia según el color o la talla, mostramos el más alto y te avisamos desde cuánto hay.</p>
   <div class="promos">
     <div class="promo"><b>Calvin Klein</b><span>Hasta 50% en todo el sitio, 30% en underwear y 60% en la Logo Shop. Hay boxers desde $7.50.</span><a href="https://www.calvinklein.us/en/sale/men" target="_blank" rel="noopener">Ver sale ↗</a></div>
     <div class="promo"><b>Gymshark</b><span>Last Chance: hasta 70% menos. Lo rebajado 60% o más es venta final, sin devolución.</span><a href="https://www.gymshark.com/collections/last-chance/mens" target="_blank" rel="noopener">Ver Last Chance ↗</a></div>
@@ -139,7 +141,7 @@ footer{color:var(--muted);font-size:13px;padding-block:0 30px}
     <div class="store"><b>Lululemon</b><div class="links"><a href="https://shop.lululemon.com/c/men-we-made-too-much/n18mhdznrqw" target="_blank" rel="noopener">Hombre ↗</a><a href="https://shop.lululemon.com/c/women-we-made-too-much/n16o10z8mhd" target="_blank" rel="noopener">Mujer ↗</a></div><p>We Made Too Much: leggings, shorts y chaquetas.</p></div>
   </div>
 </section>
-<footer class="wrap">Precios en USD antes de impuestos y envío. Las tallas cambian rápido en sale: confirma en la tienda antes de comprar. Tallas de calzado en numeración de USA.</footer>
+<footer class="wrap">Precios en USD antes de impuestos y envío. Cuando un producto tiene varios precios según color o talla, la etiqueta muestra el rebajado más alto. Las tallas cambian rápido en sale: confirma en la tienda antes de comprar. Tallas de calzado en numeración de USA.</footer>
 
 <script src="data.js"></script>
 <script src="images.js" onerror="window.IMG={}"></script>
@@ -149,7 +151,7 @@ const IMGS = window.IMG || {};
 const ORD=['XXXS','3XS','XXS','2XS','XS','S','M','L','XL','XXL','2XL','2X','3XL','3X','4XL','4X','OSZ'];
 const sk=s=>{const t=s.replace(/ Tall$/,'').toUpperCase();const i=ORD.indexOf(t);if(i>=0)return [0,i,s.length];const n=parseFloat(t.replace(/^M/,''));return isNaN(n)?[2,0,0]:[1,n,s.length]};
 const sortSizes=a=>[...new Set(a)].sort((x,y)=>{const a1=sk(x),b1=sk(y);return a1[0]-b1[0]||a1[1]-b1[1]||a1[2]-b1[2]||x.localeCompare(y)});
-const items = P.map((p,i)=>({i,brand:p[0],g:p[1],type:p[2],name:p[3],color:p[4],now:p[5],was:p[6],url:p[7],sizes:sortSizes(p[9].split(',')),pct:Math.round((1-p[5]/p[6])*100)}));
+const items = P.map((p,i)=>({i,brand:p[0],g:p[1],type:p[2],name:p[3],color:p[4],now:p[5],was:p[6],url:p[7],sizes:sortSizes(p[9].split(',')),lo:(p[10]>0&&p[10]<p[5])?p[10]:0,pct:Math.round((1-p[5]/p[6])*100)}));
 const BRANDS=['Nike','Adidas',"Levi's",'Calvin Klein','Lululemon','New Balance','Gymshark'];
 const GENDERS=['Hombre','Mujer'];
 const TYPES=['Tenis','Abrigos','Sudaderas','Deportiva','Pantalones','Camisetas','Ropa interior'];
@@ -177,7 +179,7 @@ function card(it){
   el.innerHTML=`<div class="ph">${src?`<img alt="" loading="lazy">`:`<span class="mono"></span>`}<span class="sticker">−${it.pct}%</span><span class="g">${it.g}</span></div>
   <div class="body"><div class="meta"><span>${it.brand}</span><span>${it.type}</span></div>
   <h3 class="name"></h3>${it.color&&!/^[A-Z0-9]{6,}$/.test(it.color)?'<div class="color"></div>':''}
-  <div class="price"><span class="now">$${it.now.toFixed(2)}</span><span class="was">$${it.was.toFixed(2)}</span><span class="save">ahorras $${(it.was-it.now).toFixed(2)}</span></div>
+  <div class="price"><span class="now">$${it.now.toFixed(2)}</span><span class="was">$${it.was.toFixed(2)}</span><span class="save">ahorras $${(it.was-it.now).toFixed(2)}</span></div>${it.lo?`<div class="vary">El precio varía según color o talla: otros desde <b>$${it.lo.toFixed(2)}</b></div>`:''}
   <div class="sizes">${shown.map(s=>`<span class="sz${sizeMatch(s,q)?' hit':''}">${s}</span>`).join('')}${it.sizes.length>12?`<span class="sz">+${it.sizes.length-12}</span>`:''}</div>
   <a class="go" target="_blank" rel="noopener">Ver oferta ↗</a></div>`;
   if(src){const im=el.querySelector('img');im.src=src;im.alt=it.name}
